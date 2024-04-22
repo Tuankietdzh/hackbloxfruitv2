@@ -2370,12 +2370,12 @@ local CamShake = require(game.ReplicatedStorage.Util.CameraShaker)
 CamShake:Stop()
 
     HttpService = game:GetService("HttpService")
-    local i = "tên cần đổi"
+    local i = "kietblack"
     local j = "-BloxFruit.json"
     local l = game.Players.LocalPlayer.Name .. j
     if Adel then
         HttpService = game:GetService("HttpService")
-        local i = "tên cần đổi"
+        local i = "kietblack"
         local j = "-BloxFruit.json"
         local l = game.Players.LocalPlayer.Name .. j
     end
@@ -2553,7 +2553,7 @@ OrionLib:MakeNotification({
 })
 wait(3)
 OrionLib:MakeNotification({
-    Name = "tên cần đổi",
+    Name = "kietblack",
     Content = "đợi hub load config rồi mới sài nha",
     Image = "rbxassetid://8192162908",
     Time = 10
@@ -2659,8 +2659,8 @@ local Section = W:AddSection({
 
 
 W:AddLabel("PHÁT TRIỂN BỞI")
-W:AddLabel("tên cần đổi SCRIPT")
-W:AddLabel("Discordtên cần đổi")
+W:AddLabel("kietblack SCRIPT")
+W:AddLabel("Discord tên cần đổi")
 local Section = W:AddSection({
     Name = "Status"
 })
