@@ -1,0 +1,45 @@
+-- [[ Kích hoạt Orion Library ]]
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+-- [[ Tạo cửa sổ chính - Giống Screenshot 2026-05-03 195751.jpg ]]
+local Window = OrionLib:MakeWindow({
+    Name = "My Custom Hub", -- Đổi tên của bạn ở đây
+    SubTitle = "Blox Fruit Edition",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "OrionTest",
+    IntroText = "Hello!"
+})
+
+-- [[ Thêm Tab và Section ]]
+local Tab4 = Window:MakeTab({
+    Name = "Upgrade Race",
+    Icon = "rbxassetid://4483345998", -- Icon giống trong ảnh
+    PremiumOnly = false
+})
+
+Tab4:AddSection({
+    Name = "Upgrade Race Tab"
+})
+
+-- [[ Thêm chức năng: Auto Pull Lever ]]
+Tab4:AddToggle({
+    Name = "Auto Pull Lever",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoPull = Value
+        print("Trạng thái Auto Pull:", Value)
+        
+        -- Phần code logic kéo cần gạt đã gộp ở trên
+        task.spawn(function()
+            while _G.AutoPull do
+                pcall(function()
+                    PullLever() -- Sử dụng hàm PullLever chúng ta đã gộp trước đó
+                end)
+                task.wait(2)
+            end
+        end)
+    end
+})
+
+OrionLib:Init() -- Cần dòng này để Menu hiện ra
