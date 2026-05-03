@@ -1,0 +1,115 @@
+local RedzLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/REDZHUB/REDZHUB/main/REDZHUB"))()
+
+-- [[ Cửa sổ chính - Screenshot 2026-05-03 195751.jpg ]]
+local Window = RedzLib:MakeWindow({
+  Name = "Ultra Hub Premium", 
+  SubTitle = "Better than Banana Hub",
+  Color = Color3.fromRGB(255, 100, 0) -- Màu cam đậm sang trọng
+})
+
+-- [[ Quản lý Biến Toàn cục ]]
+_G.AutoFarm = false
+_G.AutoPull = false
+_G.FastAttack = true
+_G.Distance = 10 -- Khoảng cách treo trên đầu quái
+
+-- [[ 1. LOGIC AUTO FARM XỊN (Tự động nhận nhiệm vụ & Di chuyển) ]]
+
+local function GetTarget()
+    -- Logic tự động tìm quái phù hợp với Level người chơi có thể thêm ở đây
+    local monster = game.Workspace.Enemies:FindFirstChildOfClass("Model")
+    return monster
+end
+
+local function EquipWeapon()
+    local tool = game.Players.LocalPlayer.Backpack:FindFirstChildOfClass("Tool") 
+    if tool then
+        game.Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
+    end
+end
+
+-- Hàm di chuyển mượt mà (Tween) tránh bị anti-cheat
+local function TweenTo(cframe)
+    local char = game.Players.LocalPlayer.Character
+    local hrp = char.HumanoidRootPart
+    local distance = (hrp.Position - cframe.p).Magnitude
+    local speed = 250 -- Tốc độ bay
+    
+    local tween = game:GetService("TweenService"):Create(hrp, TweenInfo.new(distance/speed, Enum.EasingStyle.Linear), {CFrame = cframe})
+    tween:Play()
+    return tween
+end
+
+-- [[ 2. TÍCH HỢP VÀO GIAO DIỆN ]]
+
+-- Tab Farming (Nâng cấp)
+local Tab1 = Window:CreateTab("Farming", "rbxassetid://4483345998")
+Tab1:AddSection("Pro Farming System")
+
+Tab1:AddToggle({
+  Name = "Auto Farm Level (Fast)",
+  Default = false,
+  Callback = function(Value)
+      _G.AutoFarm = Value
+      task.spawn(function()
+          while _G.AutoFarm do
+              local enemy = GetTarget()
+              if enemy and enemy:FindFirstChild("HumanoidRootPart") then
+                  EquipWeapon()
+                  -- Bay đến quái
+                  local tween = TweenTo(enemy.HumanoidRootPart.CFrame * CFrame.new(0, _G.Distance, 0))
+                  
+                  -- Attack liên tục (Fast Attack)
+                  if _G.FastAttack then
+                      game:GetService("VirtualUser"):CaptureController()
+                      game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+                  end
+              end
+              task.wait(0.1)
+          end
+      end)
+  end
+})
+
+Tab1:AddSlider({
+	Name = "Farm Distance",
+	Min = 5,
+	Max = 20,
+	Default = 10,
+	Callback = function(Value)
+		_G.Distance = Value
+	end
+})
+
+-- Tab Upgrade Race (Giữ nguyên logic từ ảnh Screenshot 2026-05-03 195751.jpg)
+local Tab4 = Window:CreateTab("Upgrade Race", "rbxassetid://4483345998")
+Tab4:AddSection("Auto Pull Lever Logic")
+
+Tab4:AddToggle({
+  Name = "Auto Pull Lever",
+  Default = false,
+  Callback = function(Value)
+      _G.AutoPull = Value
+      task.spawn(function()
+          while _G.AutoPull do
+              pcall(function()
+                  local lever = game:GetService("Workspace"):FindFirstChild("Lever", true)
+                  if lever and lever:FindFirstChild("ClickDetector") then
+                      TweenTo(lever.CFrame * CFrame.new(0, 5, 0))
+                      task.wait(0.5)
+                      fireclickdetector(lever.ClickDetector)
+                  end
+              end)
+              task.wait(2)
+          end
+      end)
+  end
+})
+
+Tab5:AddColorpicker({
+	Name = "ESP Color",
+	Default = Color3.fromRGB(255, 255, 0),
+	Callback = function(Value)
+		_G.ESP_Color = Value
+	end	  
+})
