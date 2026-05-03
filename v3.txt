@@ -1,0 +1,119 @@
+-- Sử dụng thư viện Orion - Cực kỳ ổn định cho Mobile và PC
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+-- Tạo cửa sổ chính (Đổi màu sang cam/vàng giống Banana Hub)
+local Window = OrionLib:MakeWindow({
+    Name = "Ultra Hub Pro", 
+    HidePremium = false, 
+    SaveConfig = true, 
+    ConfigFolder = "UltraHub",
+    IntroText = "Đang khởi tạo..."
+})
+
+-- Biến điều khiển
+_G.AutoFarm = false
+_G.AutoPull = false
+_G.ESP_Enabled = false
+
+-- Hàm Fast Attack (Sửa lỗi không đánh)
+local function Attack()
+    local VirtualUser = game:GetService("VirtualUser")
+    VirtualUser:CaptureController()
+    VirtualUser:Button1Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end
+
+-- [[ TAB FARMING ]]
+local FarmTab = Window:MakeTab({
+    Name = "Farming",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+FarmTab:AddToggle({
+    Name = "Auto Farm Level (Xịn hơn Banana)",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoFarm = Value
+        task.spawn(function()
+            while _G.AutoFarm do
+                pcall(function()
+                    -- Tìm quái gần nhất
+                    for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                        if v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                            -- Trang bị vũ khí
+                            local tool = game.Players.LocalPlayer.Backpack:FindFirstChildOfClass("Tool")
+                            if tool then game.Players.LocalPlayer.Character.Humanoid:EquipTool(tool) end
+                            
+                            -- Bay đến quái và đánh
+                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)
+                            Attack()
+                        end
+                    end
+                end)
+                task.wait()
+            end
+        end)
+    end    
+})
+
+-- [[ TAB UPGRADE RACE ]]
+local RaceTab = Window:MakeTab({
+    Name = "Upgrade Race",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+RaceTab:AddToggle({
+    Name = "Auto Pull Lever (Kéo cần gạt)",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoPull = Value
+        task.spawn(function()
+            while _G.AutoPull do
+                local lever = game:GetService("Workspace"):FindFirstChild("Lever", true)
+                if lever and lever:FindFirstChild("ClickDetector") then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = lever.CFrame
+                    fireclickdetector(lever.ClickDetector)
+                end
+                task.wait(1)
+            end
+        end)
+    end
+})
+
+-- [[ TAB ESP ]]
+local ESPTab = Window:MakeTab({
+    Name = "ESP",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+ESPTab:AddToggle({
+    Name = "Bật hiển thị tên người chơi",
+    Default = false,
+    Callback = function(Value)
+        _G.ESP_Enabled = Value
+        -- Code ESP này đơn giản hơn để tránh crash máy
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p ~= game.Players.LocalPlayer and p.Character then
+                if _G.ESP_Enabled then
+                    local bg = Instance.new("BillboardGui", p.Character.Head)
+                    bg.Name = "ESP_Tag"
+                    bg.Size = UDim2.new(0, 100, 0, 50)
+                    bg.AlwaysOnTop = true
+                    local tl = Instance.new("TextLabel", bg)
+                    tl.Text = p.Name
+                    tl.Size = UDim2.new(1, 0, 1, 0)
+                    tl.BackgroundTransparency = 1
+                    tl.TextColor3 = Color3.fromRGB(255, 255, 0)
+                else
+                    if p.Character.Head:FindFirstChild("ESP_Tag") then
+                        p.Character.Head.ESP_Tag:Destroy()
+                    end
+                end
+            end
+        end
+    end
+})
+
+OrionLib:Init()
